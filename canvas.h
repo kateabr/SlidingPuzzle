@@ -28,6 +28,8 @@ protected:
 private:
   void connectSolverWithUI();
 
+  QVector<QColor> colors;
+
   int gridSizeX = 3;
   int gridSizeY = 3;
   Board b;

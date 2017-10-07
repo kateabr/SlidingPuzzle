@@ -1,5 +1,7 @@
 #include "canvas.h"
 #include <QtConcurrent/QtConcurrent>
+#include <cstdlib>
+#include <time.h>
 
 Canvas::Canvas(QWidget *parent) : QWidget(parent) {
   b = Board::MakeBoard(gridSizeX, gridSizeY);
@@ -8,6 +10,10 @@ Canvas::Canvas(QWidget *parent) : QWidget(parent) {
   connectSolverWithUI();
   connect(&solveFutureWatcher, &QFutureWatcher<void>::finished,
           [&] { emit showControls(true); });
+  srand(time(NULL));
+  for (int i = 0; i < gridSizeX * gridSizeY; ++i) {
+    colors.push_back(QColor::fromRgb(rand() % 256, rand() % 256, rand() % 256));
+  }
 }
 
 Canvas::~Canvas() { delete solver; }
@@ -77,6 +83,9 @@ void Canvas::paintEvent(QPaintEvent *) {
       float posX = (width() * 1.0) / gridSizeX;
       float posY = (height() * 1.0) / gridSizeY;
       QRectF pos(i * posX, j * posY, width() / gridSizeX, height() / gridSizeY);
+      p.setBrush(QBrush(colors[j * gridSizeY + i]));
+      p.setPen(QPen(Qt::black));
+      p.drawRect(pos);
       p.drawText(pos, QString::number(b.getElem(i, j)),
                  QTextOption(Qt::AlignCenter));
     }

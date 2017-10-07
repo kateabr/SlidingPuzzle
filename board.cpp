@@ -46,9 +46,9 @@ bool Board::validLayout(const Board &b) {
             ++inv;
         }
 
-  if (b.gridSizeY % 2)
+  if (b.gridSizeX % 2)
     return !(inv % 2);
-  else if (!(b.gridSizeX % 2))
+  else if (!(b.gridSizeY % 2))
     return !((k + inv) % 2);
   else
     return (k + inv) % 2;

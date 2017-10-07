@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-using byte = char;
+using byte = int;
 
 class Board {
 public:
