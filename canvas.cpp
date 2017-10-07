@@ -1,36 +1,55 @@
 #include "canvas.h"
+#include <QtConcurrent/QtConcurrent>
 
 Canvas::Canvas(QWidget *parent) : QWidget(parent) {
-  b = Board<int>::MakeBoard(gridSizeX, gridSizeY);
-  solver = new SimpleSolver<int>;
+  b = Board::MakeBoard(gridSizeX, gridSizeY);
+  solver = new BFSSolver;
+
+  connectSolverWithUI();
+  connect(&solveFutureWatcher, &QFutureWatcher<void>::finished,
+          [&] { emit showControls(true); });
 }
 
 Canvas::~Canvas() { delete solver; }
 
 void Canvas::setGridSizeX(int sz) {
   gridSizeX = sz;
-  b = Board<int>::MakeBoard(gridSizeX, gridSizeY);
+  b = Board::MakeBoard(gridSizeX, gridSizeY);
   update();
 }
 
 void Canvas::setGridSizeY(int sz) {
   gridSizeY = sz;
-  b = Board<int>::MakeBoard(gridSizeX, gridSizeY);
+  b = Board::MakeBoard(gridSizeX, gridSizeY);
   update();
 }
 
 void Canvas::solvePuzzle() {
-  solver->solve(b);
-  update();
+  solveFuture = QtConcurrent::run([&]() {
+    emit showControls(false);
+    solver->solve(b);
+  });
+  solveFutureWatcher.setFuture(solveFuture);
 }
 
 void Canvas::setSolvingMethod(int m) {
-  delete solver;
+  delete solver; // auto disconnect
   if (m == 0)
-    solver = new SimpleSolver<int>();
+    solver = new BFSSolver();
+  else if (m == 1)
+    solver = new AStarSolver();
+
+  connectSolverWithUI();
 }
 
-void Canvas::paintEvent(QPaintEvent *e) {
+void Canvas::connectSolverWithUI() {
+  connect(solver, &Solver::updateLayout, [&]() { update(); });
+  connect(solver, &Solver::updateOps, [&](int ops) { emit updateOps(ops); });
+  connect(solver, &Solver::updateTime,
+          [&](int time) { emit updateTime(time); });
+}
+
+void Canvas::paintEvent(QPaintEvent *) {
   QPainter p(this);
   p.setBrush(Qt::black);
   p.setPen(QPen(Qt::black, 2));

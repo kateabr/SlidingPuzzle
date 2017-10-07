@@ -10,6 +10,21 @@ MainWindow::MainWindow(QWidget *parent)
       ui->solvingMethod,
       static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
       ui->canvas, &Canvas::setSolvingMethod);
+
+  connect(ui->canvas, &Canvas::updateTime,
+          [&](int time) { ui->time->setText(QString::number(time) + " sec"); });
+
+  connect(ui->canvas, &Canvas::updateOps,
+          [&](int ops) { ui->ops->setText(QString::number(ops) + " ops"); });
+
+  connect(ui->canvas, &Canvas::showControls, this, &MainWindow::showControls);
 }
 
 MainWindow::~MainWindow() { delete ui; }
+
+void MainWindow::showControls(bool showControls) {
+  ui->gridSizeX->setEnabled(showControls);
+  ui->gridSizeY->setEnabled(showControls);
+  ui->puzzleSolve->setEnabled(showControls);
+  ui->solvingMethod->setEnabled(showControls);
+}

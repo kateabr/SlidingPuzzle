@@ -2,38 +2,27 @@
 #define SOLVER_H
 
 #include "board.h"
-#include <QQueue>
+#include <QObject>
 
-template <typename T> class Solver {
+class Solver : public QObject {
+  Q_OBJECT
 public:
-  virtual void solve(Board<T> &b) = 0;
+  virtual void solve(Board &b) = 0;
+
+signals:
+  void updateLayout();
+  void updateTime(int);
+  void updateOps(int);
 };
 
-template <typename T> class SimpleSolver : public Solver<T> {
+class BFSSolver : public Solver {
 public:
-  void solve(Board<T> &b) override {
-    QQueue<Board<T>> layouts;
-    QSet<size_t> visited;
-    layouts.push_back(b);
-    while (!layouts.empty()) {
-      Board<T> cur = layouts.takeFirst();
-      if (cur.final()) {
-        b = cur;
-        return;
-      }
-      if (visited.contains(cur.getHash()))
-        continue;
-      if (cur.canMoveDown())
-        layouts.push_back(cur.moveDown());
-      if (cur.canMoveLeft())
-        layouts.push_back(cur.moveLeft());
-      if (cur.canMoveRight())
-        layouts.push_back(cur.moveRight());
-      if (cur.canMoveUp())
-        layouts.push_back(cur.moveUp());
-      visited.insert(cur.getHash());
-    }
-  }
+  void solve(Board &b) override;
+};
+
+class AStarSolver : public Solver {
+public:
+  void solve(Board &b) override;
 };
 
 #endif // SOLVER_H

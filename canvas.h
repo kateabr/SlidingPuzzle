@@ -17,14 +17,24 @@ public slots:
   void solvePuzzle();
   void setSolvingMethod(int m);
 
+signals:
+  void updateTime(int);
+  void updateOps(int);
+  void showControls(bool);
+
 protected:
-  void paintEvent(QPaintEvent *e);
+  void paintEvent(QPaintEvent *);
 
 private:
+  void connectSolverWithUI();
+
   int gridSizeX = 3;
   int gridSizeY = 3;
-  Board<int> b;
-  Solver<int> *solver;
+  Board b;
+  Solver *solver;
+
+  QFuture<void> solveFuture;
+  QFutureWatcher<void> solveFutureWatcher;
 };
 
 #endif // CANVAS_H

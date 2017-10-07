@@ -14,8 +14,8 @@ public:
   explicit MainWindow(QWidget *parent = 0);
   ~MainWindow();
 
-private slots:
-  void on_puzzleSolve_clicked();
+public slots:
+  void showControls(bool showControls);
 
 private:
   Ui::MainWindow *ui;
