@@ -53,14 +53,17 @@ void Canvas::paintEvent(QPaintEvent *) {
   QPainter p(this);
   p.setBrush(Qt::black);
   p.setPen(QPen(Qt::black, 2));
-  for (int i = 0; i <= gridSizeX; ++i) {
-    int x = qMin(1 + i * (width() / gridSizeX), width() - 1);
-    p.drawLine(x, 1, x, height() - 1);
+  for (int i = 0; i <= gridSizeX - 1; ++i) {
+    p.drawLine(1 + i * (width() / gridSizeX), 1, 1 + i * (width() / gridSizeX),
+               height() - 1);
   }
-  for (int i = 0; i <= gridSizeY; ++i) {
-    int y = qMin(1 + i * (height() / gridSizeY), height() - 1);
-    p.drawLine(1, y, width() - 1, y);
+  p.drawLine(width() - 1, 1, width() - 1, height() - 1);
+
+  for (int i = 0; i <= gridSizeY - 1; ++i) {
+    p.drawLine(1, 1 + i * (height() / gridSizeY), width() - 1,
+               1 + i * (height() / gridSizeY));
   }
+  p.drawLine(1, height() - 1, width() - 1, height() - 1);
 
   QFont font = p.font();
   font.setPointSize(
